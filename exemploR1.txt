@@ -1,0 +1,179 @@
+!
+!
+!
+
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+!
+!
+ip cef
+no ip domain lookup
+!
+!
+!
+mpls traffic-eng tunnels
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+class-map match-all VoIP
+ match mpls experimental topmost 5 
+class-map match-all inExp5
+ match access-group 101
+!
+!
+policy-map OUT-POLICY
+ class VoIP
+  priority 20
+ class class-default
+  bandwidth 50
+  random-detect
+policy-map INPUT-POLICY
+ class inExp5
+  set mpls experimental 5
+ class class-default
+  set mpls experimental 0
+!
+! 
+!
+!
+!
+!
+interface Loopback1
+ ip address 10.2.255.1 255.255.255.255
+!
+interface Tunnel0
+ ip unnumbered Loopback1
+ tunnel destination 10.2.255.4
+ tunnel mode mpls traffic-eng
+ tunnel mpls traffic-eng priority 7 0
+ tunnel mpls traffic-eng bandwidth sub-pool 20
+ tunnel mpls traffic-eng path-option 1 explicit name caminho1
+ no routing dynamic
+!
+interface Tunnel1
+ ip unnumbered Loopback1
+ tunnel destination 10.2.255.4
+ tunnel mode mpls traffic-eng
+ tunnel mpls traffic-eng priority 7 0
+ tunnel mpls traffic-eng bandwidth  50
+ tunnel mpls traffic-eng path-option 2 dynamic
+ no routing dynamic
+!
+interface FastEthernet0/0
+ bandwidth 100
+ ip address 10.2.1.1 255.255.255.252
+ duplex auto
+ speed auto
+ mpls ip
+ mpls traffic-eng tunnels
+ service-policy output OUT-POLICY
+ ip rsvp bandwidth 100 50 sub-pool 20
+!
+interface FastEthernet1/0
+ ip address 10.2.6.254 255.255.255.0
+ ip policy route-map voz
+ duplex auto
+ speed auto
+ service-policy input INPUT-POLICY
+!
+interface FastEthernet2/0
+ bandwidth 100
+ ip address 10.2.2.1 255.255.255.252
+ duplex auto
+ speed auto
+ mpls ip
+ mpls traffic-eng tunnels
+ service-policy output OUT-POLICY
+ ip rsvp bandwidth 100 50 sub-pool 20
+!
+interface FastEthernet3/0
+ ip address 10.2.8.254 255.255.255.0
+ ip policy route-map voz
+ duplex auto
+ speed auto
+ service-policy input INPUT-POLICY
+!
+router ospf 1
+ mpls traffic-eng router-id Loopback1
+ mpls traffic-eng area 0
+ log-adjacency-changes
+ network 10.2.1.0 0.0.0.3 area 0
+ network 10.2.2.0 0.0.0.3 area 0
+ network 10.2.6.0 0.0.0.255 area 0
+ network 10.2.8.0 0.0.0.255 area 0
+ network 10.2.255.1 0.0.0.0 area 0
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+ip explicit-path name caminho1 enable
+ next-address 10.2.1.2 
+ next-address 10.2.4.2 
+ next-address 10.2.5.2 
+!
+access-list 101 permit udp any any eq 5555
+no cdp log mismatch duplex
+!
+route-map voz permit 10
+ match ip address 101
+ set interface Tunnel0
+!
+route-map voz permit 20
+ set interface Tunnel1
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
