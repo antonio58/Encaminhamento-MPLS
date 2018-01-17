@@ -1,0 +1,70 @@
+
+vpc:
+set ip -> 	ip address  mask          defaulGateway
+			ip 10.1.1.1 255.255.255.0 10.1.1.254
+
+ping ->		ping address
+
+
+cisco router:
+
+#config terminal		<- enter configuration mode
+(conf t)
+
+	#interface e0			<- enter interface configuration mode
+	(int f0/0)
+	(int loop 0) (loopback)
+
+		#ip address 10.1.0.1 255.255.0.0	<- set ip address
+
+	#router ospf {process_id(200 costuma tar fixe)}	<- modo ospf
+	
+		#network 10.1.0.0 255.255.0.0 area 0.0.0.0  <- adiciona rede à tabela
+		
+#sh ip int brief	<- resumo das interfaces 
+#sh ip ospf database <- tabela de encaminhamento ospf 
+#sh ip ospf neighbor <- vizinhos ospf 
+
+
+
+
+
+// Bigodes nos túneis
+
+R1#show interfaces  tunnel 159
+Tunnel159 is up, line protocol is down
+  Hardware is Tunnel
+  Interface is unnumbered. Using address of Loopback0 (10.3.0.1)
+  MTU 1514 bytes, BW 9 Kbit, DLY 500000 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation TUNNEL, loopback not set
+  Keepalive not set
+  Tunnel source UNKNOWN, destination 10.3.0.5
+  Tunnel protocol/transport Label Switching
+
+  Fast tunneling enabled
+  Tunnel transmit bandwidth 8000 (kbps)
+  Tunnel receive bandwidth 8000 (kbps)
+  Last input never, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/0 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts, 0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+     0 packets output, 0 bytes, 0 underruns
+     0 output errors, 0 collisions, 0 interface resets
+     0 output buffer failures, 0 output buffers swapped out
+R1#show ip rsvp int
+R1#show ip rsvp interface
+interface    allocated  i/f max  flow max sub max
+Fa2/0        0          512K     512K     0
+Fa3/0        0          512K     512K     0
+R1#show ip rsvp interface Fa
+R1#show ip rsvp interface FastEthernet2/0
+interface    allocated  i/f max  flow max sub max
+Fa2/0        0          512K     512K     0
+
