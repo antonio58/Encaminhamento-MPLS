@@ -1,0 +1,35 @@
+vpc:
+set ip -> 	ip address  mask          defaulGateway
+			ip 10.1.1.1 255.255.255.0 10.1.1.254
+
+ping ->		ping address
+
+
+cisco router:
+
+#config terminal		<- enter configuration mode
+(conf t)
+
+	#interface e0			<- enter interface configuration mode
+	(int f0/0)
+	(int loop 0) (loopback)
+
+		#ip address 10.1.0.1 255.255.0.0	<- set ip address
+
+	#router ospf {process_id(200 costuma tar fixe)}	<- modo ospf
+	
+		#network 10.1.0.0 255.255.0.0 area 0.0.0.0  <- adiciona rede à tabela
+		
+#sh ip int brief	<- resumo das interfaces 
+#sh ip ospf database <- tabela de encaminhamento ospf 
+#sh ip ospf neighbor <- vizinhos ospf 
+#show ip route <- ver todas as ligações	da tabela de encaminhamento	
+
+
+
+// Bigodes
+// Advertise loopback
+// R1
+#int f3/0
+
+
