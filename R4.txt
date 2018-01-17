@@ -11,6 +11,13 @@
 !
 !
 !
+!
+!
+!
+!
+!
+!
+!
 
 !
 version 12.4
@@ -34,6 +41,7 @@ no ip domain lookup
 !
 !
 !
+mpls traffic-eng tunnels
 !
 !
 !
@@ -61,13 +69,21 @@ interface Loopback0
 !
 interface FastEthernet0/0
  ip address 10.3.5.2 255.255.255.0
+ bandwidth 512
  duplex auto
  speed auto
+ mpls traffic-eng tunnels
+ tag-switching ip
+ ip rsvp bandwidth 512 512
 !
 interface FastEthernet1/0
  ip address 10.3.7.1 255.255.255.0
+ bandwidth 512
  duplex auto
  speed auto
+ mpls traffic-eng tunnels
+ tag-switching ip
+ ip rsvp bandwidth 512 512
 !
 interface FastEthernet2/0
  no ip address
@@ -83,8 +99,10 @@ interface FastEthernet3/0
 !
 router ospf 200
  log-adjacency-changes
- network 10.3.5.0 0.0.0.255 area 0.0.0.0
- network 10.3.7.0 0.0.0.255 area 0.0.0.0
+ network 10.3.5.0 0.0.0.255 area 0
+ network 10.3.7.0 0.0.0.255 area 0
+ mpls traffic-eng area 0
+ mpls traffic-eng router-id Loopback0
 !
 no ip http server
 no ip http secure-server
