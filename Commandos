@@ -25,7 +25,8 @@ cisco router:
 #sh ip ospf database <- tabela de encaminhamento ospf 
 #sh ip ospf neighbor <- vizinhos ospf 
 
-
+#show mpls traffic-eng tunnels brief
+#show tag-switching forwarding-table
 
 
 
