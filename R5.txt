@@ -11,6 +11,13 @@
 !
 !
 !
+!
+!
+!
+!
+!
+!
+!
 
 !
 version 12.4
@@ -35,6 +42,7 @@ no ip domain lookup
 !
 !
 !
+mpls traffic-eng tunnels
 !
 !
 !
@@ -59,13 +67,39 @@ ip tcp synwait-time 5
 interface Loopback0
  ip address 10.3.0.5 255.255.255.255
 !
+interface Tunnel10
+ ip unnumbered Loopback0
+ tunnel destination 10.3.0.1
+ tunnel mode mpls traffic-eng
+ tunnel mpls traffic-eng autoroute announce
+ tunnel mpls traffic-eng priority 1 1 
+ tunnel mpls traffic-eng bandwidth 256
+ tunnel mpls traffic-eng path-option 1 explicit name barriga
+!
+interface Tunnel11
+ ip unnumbered Loopback0
+ tunnel destination 10.3.0.1
+ tunnel mode mpls traffic-eng
+ tunnel mpls traffic-eng autoroute announce
+ tunnel mpls traffic-eng priority 4 4
+ tunnel mpls traffic-eng bandwidth 256
+ tunnel mpls traffic-eng path-option 1 dynamic
+!
 interface FastEthernet0/0
+ bandwidth 512
  ip address 10.3.7.2 255.255.255.0
+ tag-switching ip
+ mpls traffic-eng tunnels
+ ip rsvp bandwidth 512 512
  duplex auto
  speed auto
 !
 interface FastEthernet1/0
+ bandwidth 512
  ip address 10.3.6.2 255.255.255.0
+ tag-switching ip
+ mpls traffic-eng tunnels
+ ip rsvp bandwidth 512 512
  duplex auto
  speed auto
 !
@@ -82,9 +116,11 @@ interface FastEthernet3/0
 !
 router ospf 200
  log-adjacency-changes
- network 10.3.6.0 0.0.0.255 area 0.0.0.0
- network 10.3.7.0 0.0.0.255 area 0.0.0.0
- network 10.3.8.0 0.0.0.255 area 0.0.0.0
+ network 10.3.6.0 0.0.0.255 area 0
+ network 10.3.7.0 0.0.0.255 area 0
+ network 10.3.8.0 0.0.0.255 area 0
+ mpls traffic-eng area 0
+ mpls traffic-eng router-id Loopback0
 !
 no ip http server
 no ip http secure-server
@@ -99,6 +135,10 @@ control-plane
 !
 !
 !
+ip explicit-path name barriga enable
+ next-address 10.3.7.1
+ next-address 10.3.5.1
+ next-address 10.3.3.1
 !
 !
 !
